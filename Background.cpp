@@ -73,8 +73,3 @@ void Background::update_texture() {
 
     texture.update(frame);
 }
-
-
-
-
-

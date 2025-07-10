@@ -30,7 +30,15 @@ public:
 
 	void update_texture();
 
+	/////
+	const cv::Mat& get_frame() const { return frame; }
+	/////
+
+
+
 	GLuint get_texture_id() const { return texture.get_ID(); }
+
+	cv::Mat& get_current_frame() { return frame; }
 
 	~Background();
 };

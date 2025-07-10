@@ -1,4 +1,4 @@
-#include "Renderer.hpp"
+﻿#include "Renderer.hpp"
 
 
 bool Renderer::initialize(const int& width, const int& height, const std::string& filepath) {
@@ -39,6 +39,8 @@ bool Renderer::initialize(const int& width, const int& height, const std::string
     shader_model = std::make_unique<Shader>(MODEL_FILE_VERT_PATH, MODEL_FILE_FRAG_PATH);
     shader_background = std::make_unique<Shader>(BACKGROUND_FILE_VERT_PATH, BACKGROUND_FILE_FRAG_PATH);
     background = std::make_unique<Background>(width, height, 0);
+
+
 
     if (!load_model(filepath)) {
         return false;
@@ -219,6 +221,7 @@ void Renderer::render_only_background() {
 
 }
 
+/*
 void Renderer::render() {
 
     show_camera_control();
@@ -283,6 +286,77 @@ void Renderer::render() {
     }
 
 }
+*/
+
+void Renderer::render() {
+    show_camera_control();
+
+    PatternDetector patternDetector(7, 7); // Detecta patrón de ajedrez 7x7
+
+    while (!glfwWindowShouldClose(window)) {
+        auto currentFrame = static_cast<float>(glfwGetTime());
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        process_input();
+        glfwPollEvents();
+
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        if (background && shader_background) {
+            glDisable(GL_DEPTH_TEST);
+            background->update_texture();
+            background->draw(*shader_background);
+        }
+
+        // Obtener frame actual desde la cámara
+        const cv::Mat& frame = background->get_frame();
+
+        // Detectar patrón de ajedrez
+        bool found = patternDetector.detect(frame);
+
+        // Solo renderizar modelo si se encontró patrón
+        if (found && mesh_model && shader_model && camera) {
+            glEnable(GL_DEPTH_TEST);
+            shader_model->use();
+
+            glm::mat4 model = glm::mat4(1.0f);
+            if (autoRotate) {
+                modelRotationY += 0.5f * deltaTime;
+            }
+            model = glm::rotate(model, modelRotationY, glm::vec3(0.0f, 1.0f, 0.0f));
+
+            glm::mat4 view = camera->get_view_matrix();
+
+            int width{}, height{};
+            glfwGetFramebufferSize(window, &width, &height);
+            float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+
+            glm::mat4 projection = glm::perspective(glm::radians(camera->get_zoom()),
+                aspectRatio, 0.1f, 100.0f);
+
+            shader_model->set_matrix4("model", model);
+            shader_model->set_matrix4("view", view);
+            shader_model->set_matrix4("projection", projection);
+
+            shader_model->set_vec3("light.position", glm::vec3(2.0f, 2.0f, 2.0f));
+            shader_model->set_vec3("light.ambient", glm::vec3(1.5f, 1.5f, 1.5f));
+            shader_model->set_vec3("light.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+            shader_model->set_vec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+            glm::vec3 lightPos = camera->get_position() + camera->get_front() * 2.0f;
+            shader_model->set_vec3("lightPos", lightPos);
+            shader_model->set_vec3("lightColor", glm::vec3(1.0f));
+            shader_model->set_vec3("objectColor", glm::vec3(0.8f, 0.6f, 0.4f));
+
+            mesh_model->draw(*shader_model);
+        }
+
+        glfwSwapBuffers(window);
+    }
+}
+
 
 void Renderer::cleanup() {
     mesh_model.reset();
