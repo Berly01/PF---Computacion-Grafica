@@ -23,7 +23,6 @@ void OBJLoader::parse_face(
 
         ut::Vertex3D v;
 
-        // Posicion
         if (!posIndex.empty()) {
             int idx = std::stoi(posIndex) - 1; // OBJ usa indices basados en 1
             if (idx >= 0 && idx < tempPositions.size()) {
@@ -31,7 +30,6 @@ void OBJLoader::parse_face(
             }
         }
 
-        // Textura
         if (!texIndex.empty()) {
             int idx = std::stoi(texIndex) - 1;
             if (idx >= 0 && idx < tempTexCoords.size()) {
@@ -39,7 +37,6 @@ void OBJLoader::parse_face(
             }
         }
 
-        // Normal
         if (!normalIndex.empty()) {
             int idx = std::stoi(normalIndex) - 1;
             if (idx >= 0 && idx < tempNormals.size()) {
@@ -165,7 +162,6 @@ bool OBJLoader::load_OBJ(
         iss >> prefix;
 
         if (prefix == "v") {
-            // Vértice
             float x;
             float y;
             float z;
@@ -173,7 +169,6 @@ bool OBJLoader::load_OBJ(
             tempPositions.emplace_back(x, y, z);
         }
         else if (prefix == "vn") {
-            // Normal
             float x;
             float y;
             float z;
@@ -182,22 +177,18 @@ bool OBJLoader::load_OBJ(
             hasNormals = true;
         }
         else if (prefix == "vt") {
-            // Coordenada de textura
             float u;
             float v;
             iss >> u >> v;
             tempTexCoords.emplace_back(u, v);
         }
         else if (prefix == "f") {
-            // Cara
             parse_face(line, vertices, indices);
         }
         else if (prefix == "mtllib") {
-            // Cargar archivo de materiales
             std::string mtlFile;
             iss >> mtlFile;
 
-            // Construir ruta completa del archivo MTL
             std::string mtlPath = filepath.substr(0, filepath.find_last_of("/\\") + 1) + mtlFile;
             load_MTL(mtlPath);
         }
@@ -207,7 +198,6 @@ bool OBJLoader::load_OBJ(
         }
     }
 
-    // Si no hay normales en el archivo, calcularlas
     if (!hasNormals) {
         calculate_normals(vertices, indices);
     }

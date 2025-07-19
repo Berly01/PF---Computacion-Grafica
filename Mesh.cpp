@@ -79,9 +79,9 @@ void Mesh::draw(const Shader& shader) const {
     }
 }
 
-Triangle Mesh::get_triangle(size_t triangleIndex) const {
+ut::Triangle Mesh::get_triangle(size_t triangleIndex) const {
     size_t baseIndex = triangleIndex * 3;
-    return Triangle(
+    return ut::Triangle(
         vertices[indices[baseIndex]].position,
         vertices[indices[baseIndex + 1]].position,
         vertices[indices[baseIndex + 2]].position

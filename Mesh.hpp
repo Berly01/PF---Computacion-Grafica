@@ -2,7 +2,6 @@
 #include <GL/glew.h>
 #include <vector>
 #include "utils.hpp"
-#include "Triangle.hpp"
 #include "Texture.hpp"
 #include "Shader.hpp"
 
@@ -27,7 +26,7 @@ public:
     
     void draw(const Shader& shader) const;
 
-    Triangle get_triangle(size_t triangleIndex) const;
+    ut::Triangle get_triangle(size_t triangleIndex) const;
 
     size_t get_triangle_count() const { return indices.size() / 3; }
 };

@@ -1,0 +1,5 @@
+newmtl Mat
+Kd 0.80000001192093 0.80000001192093 0.80000001192093
+map_Kd models/tex/cargador.jpg
+illum 7
+

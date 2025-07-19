@@ -37,11 +37,12 @@ private:
     bool autoRotate = false;
 
     float rotationY = 0.0f;
+    float scale = 1.0f;
 
-    const std::string MODEL_FILE_VERT_PATH = "./shaders/model_shader.vert";
-    const std::string MODEL_FILE_FRAG_PATH = "./shaders/model_shader.frag";
-    const std::string BACKGROUND_FILE_VERT_PATH = "./shaders/background_shader.vert";
-    const std::string BACKGROUND_FILE_FRAG_PATH = "./shaders/background_shader.frag";
+    const std::string MODEL_FILE_VERT_PATH = "shaders/model_shader.vert";
+    const std::string MODEL_FILE_FRAG_PATH = "shaders/model_shader.frag";
+    const std::string BACKGROUND_FILE_VERT_PATH = "shaders/background_shader.vert";
+    const std::string BACKGROUND_FILE_FRAG_PATH = "shaders/background_shader.frag";
 
 public:
 
@@ -58,6 +59,8 @@ public:
     void render();
 
     void cleanup();
+
+    void set_model_scale(const float& scale);
 
     void show_camera_control() const;
 

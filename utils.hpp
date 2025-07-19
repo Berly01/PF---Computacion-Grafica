@@ -33,4 +33,13 @@ namespace ut {
         std::string normalTexture;
         std::string specularTexture;
     };
+
+    struct Triangle {
+        glm::vec3 v1;
+        glm::vec3 v2;
+        glm::vec3 v3;
+        Triangle(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c) :
+            v1(a), v2(b), v3(c) {};
+    };
+
 }
