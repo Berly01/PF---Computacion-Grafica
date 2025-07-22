@@ -1,6 +1,6 @@
-﻿#include "Renderer.hpp"
+#include "Renderer.hpp"
 
-
+//get_corners()
 bool Renderer::initialize(const int& width, const int& height, const std::string& filepath) {
 
     if (!glfwInit()) {
@@ -160,10 +160,25 @@ void Renderer::render_only_model() {
             if (autoRotate) {
                 modelRotationY += 0.5f * deltaTime; 
             }
-            model = glm::rotate(model, modelRotationY, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::rotate(model, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
             model = glm::scale(model, glm::vec3(scale, scale, scale));
 
+            std::cout << modelRotationY * (180 / 3.1415) << "\n";
+
             glm::mat4 view = camera->get_view_matrix();
+
+            std::cout << camera->get_front().x << " " << camera->get_front().y<< " " << camera->get_front().z << "\n";
+            std::cout << camera->get_position().x << " " << camera->get_position().y << " " << camera->get_position().z << "\n";
+            std::cout << camera->get_zoom()<< "\n";
+            std::cout << camera->get_yaw() << " " << camera->get_pitch() << "\n";
+
+            /* rotationY
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    std::cout << view[i][j] << " ";
+                }
+                std::cout << "\n"; process
+            }*/
 
             int width{};
             int height{};
@@ -220,7 +235,7 @@ void Renderer::render_only_background() {
 void Renderer::render() {
     show_camera_control();
 
-    PatternDetector patternDetector(7, 7); // Detecta patron de ajedrez 7x7
+    PatternDetector patternDetector(7, 7); 
 
     while (!glfwWindowShouldClose(window)) {
         auto currentFrame = static_cast<float>(glfwGetTime());
@@ -239,18 +254,49 @@ void Renderer::render() {
             background->draw(*shader_background);
         }
 
-        // Obtener frame actual desde la cámara
+      
+
+
         const cv::Mat& frame = background->get_frame();
+        cv::Mat flipped;
+        cv::flip(frame, flipped, -1);
+        
+        
+
+        //int detect = hand_detector->detectGesture(flipped);
 
         // Detectar patrón de ajedrez
-        bool found = patternDetector.detect(frame);
+        bool found = patternDetector.detect(flipped);
+        //std::cout << detect << "\n";
 
-        // Solo renderizar modelo si se encontró patrón
+
+
         if (found && mesh_model && shader_model && camera) {
             glEnable(GL_DEPTH_TEST);
             shader_model->use();
 
+            //std::cout << "detectado";
+
             auto model = glm::mat4(1.0f);
+
+            /*
+            if (detect == 2)
+                modelRotationY += 0.0f * deltaTime;
+            else
+                modelRotationY += 0.0f * deltaTime;
+            */
+            
+            model = glm::rotate(model, modelRotationY, glm::vec3(0.0f, 0.0f, 1.0f));
+            model = glm::scale(model, glm::vec3(scale, scale, scale));
+
+            
+
+            camera->process_from_corners(patternDetector.get_corners());
+
+            std::cout << camera->get_front().x << " " << camera->get_front().y<< " " << camera->get_front().z << " <- orientación de camara\n";
+            std::cout << camera->get_position().x << " " << camera->get_position().y << " " << camera->get_position().z << "<- posición de la camara\n";
+            //std::cout << camera->get_zoom()<< "\n";
+            //std::cout << camera->get_yaw() << " " << camera->get_pitch() << "\n";
 
             glm::mat4 view = camera->get_view_matrix();
 
@@ -300,12 +346,12 @@ void Renderer::set_model_scale(const float& scale) {
 }
 
 void Renderer::show_camera_control() const {
-    std::cout << "\n=== CONTROLES ===" << std::endl;
-    std::cout << "WASD: Mover camara (adelante/atras/izquierda/derecha)" << std::endl;
+
+    std::cout << "WASD: Mover camara " << std::endl;
     std::cout << "Espacio: Subir camara" << std::endl;
     std::cout << "Shift: Bajar camara" << std::endl;
     std::cout << "Mouse: Rotar camara" << std::endl;
     std::cout << "Scroll: Zoom" << std::endl;
-    std::cout << "ESC: Salir" << std::endl;
-    std::cout << "=================" << std::endl;
+
+
 }
