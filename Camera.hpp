@@ -5,6 +5,7 @@
 #include <geometric.hpp>
 #include <ext/matrix_float4x4.hpp>
 #include <ext/matrix_transform.hpp>
+#include <opencv2/opencv.hpp>
 
 class Camera {
 private:
@@ -20,6 +21,8 @@ private:
     float movementSpeed;
     double mouseSensitivity;
     double zoom;
+
+    
 
     void update_camera_vectors();
 
@@ -50,9 +53,24 @@ public:
 
     void process_mouse_scroll(double yoffset);
 
-    float get_zoom() const { return zoom; }
-    glm::vec3 get_position() const { return position; }
-    glm::vec3 get_front() const { return front; }
+    void process_from_corners(std::vector<cv::Point2f> corners);
+
+    float get_zoom() const { 
+        return zoom; 
+    }
+    glm::vec3 get_position() const { 
+        return position; 
+    }
+    glm::vec3 get_front() const { 
+        return front; 
+    }
+
+    double get_yaw() const { 
+        return yaw;
+    }
+    double get_pitch() const { 
+        return pitch; 
+    }
 
 };
 
