@@ -5,6 +5,7 @@
 #include "OBJLoader.hpp"
 #include "Camera.hpp"
 #include "Background.hpp"
+#include "HandGestureDetector.hpp"
 
 #include "PatternDetector.hpp"
 
@@ -24,6 +25,7 @@ private:
     glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
+    //std::unique_ptr<HandGestureDetector> hand_detector;
 
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
@@ -34,7 +36,7 @@ private:
     bool mouseEnabled = true;
 
     float modelRotationY = 0.0f;
-    bool autoRotate = false;
+    bool autoRotate = true;
 
     float rotationY = 0.0f;
     float scale = 1.0f;
